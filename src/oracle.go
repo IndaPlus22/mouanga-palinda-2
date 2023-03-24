@@ -51,17 +51,12 @@ func Oracle() chan<- string {
 		}
 	}()
 
-	// TODO: Answer questions.
-
-	// TODO: Make prophecies.
 	go func() {
 		for {
 			time.Sleep(time.Duration(5+rand.Intn(14)) * time.Second)
 			prophecy("", answers)
 		}
 	}()
-
-	// TODO: Print answers.
 
 	go func() {
 		for {
@@ -74,7 +69,7 @@ func Oracle() chan<- string {
 
 // This is the oracle's secret algorithm.
 // It waits for a while and then sends a message on the answer channel.
-// TODO: make it better.
+
 func prophecy(question string, answer chan<- string) {
 	// Keep them waiting. Pythia, the original oracle at Delphi,
 	// only gave prophecies on the seventh day of each month.
