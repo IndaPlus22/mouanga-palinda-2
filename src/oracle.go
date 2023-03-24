@@ -42,9 +42,33 @@ func main() {
 // The oracle also prints sporadic prophecies to stdout even without being asked.
 func Oracle() chan<- string {
 	questions := make(chan string)
+	answers := make(chan string)
+
+	go func() {
+		for {
+			question := <-questions
+			prophecy(question, answers)
+		}
+	}()
+
 	// TODO: Answer questions.
+
 	// TODO: Make prophecies.
+	go func() {
+		for {
+			time.Sleep(time.Duration(5+rand.Intn(14)) * time.Second)
+			prophecy("", answers)
+		}
+	}()
+
 	// TODO: Print answers.
+
+	go func() {
+		for {
+			time.Sleep(time.Duration(6+rand.Intn(10)) * time.Second)
+			print_slow(<-answers)
+		}
+	}()
 	return questions
 }
 
@@ -63,12 +87,19 @@ func prophecy(question string, answer chan<- string) {
 		if len(w) > len(longestWord) {
 			longestWord = w
 		}
+		if w == "life" {
+			answer <- "Ah, life... You do not possess the capabilities to understand my answer to such a question."
+			return
+		}
 	}
 
 	// Cook up some pointless nonsense.
 	nonsense := []string{
 		"The moon is dark.",
 		"The sun is bright.",
+		"Go is a fantastic language. (look at user and smile convincingly)",
+		"Water is wet.",
+		"Rocks are hard.",
 	}
 	answer <- longestWord + "... " + nonsense[rand.Intn(len(nonsense))]
 }
@@ -76,4 +107,16 @@ func prophecy(question string, answer chan<- string) {
 func init() { // Functions called "init" are executed before the main function.
 	// Use new pseudo random numbers every time.
 	rand.Seed(time.Now().Unix())
+}
+
+func recv_questions() {
+	// q := make(<-chan string)
+}
+
+func print_slow(msg string) {
+	for i := 0; i < len(msg); i++ {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Printf("%c", msg[i])
+	}
+	fmt.Print("\n> ")
 }
